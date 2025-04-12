@@ -6,14 +6,17 @@ autom4te.cache/
 build/
 config.h
 config.h.in
+config.h.in~
 config.log
 config.nice
 config.status
 configure
+configure~
 configure.ac
 libtool
 modules/
 mygmp.dep
 mygmp.la
 mygmp.lo
+mygmp.loT
 run-tests.php
