@@ -7,6 +7,8 @@ function mygmp_version(): void {}
 function mygmp_get_version(): string {}
 
 function mygmp_add(string $a, string $b): string|false {}
-function mygmp_add_array(array $arr): string|false {}
+function mygmp_add_array(array $arr): string {}
+
+function mygmp_sum(array $nums): string|false {}
 
 function mygmp_random_ints(int $count, int $bits = 64): array|false {}
