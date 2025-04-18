@@ -169,6 +169,27 @@ PHP_METHOD(MyGMP, __construct) {
    }
 }
 
+static zend_string* mpz_to_zend_string(mpz_t value, int base) {
+    zend_string *retstr = zend_string_alloc(mpz_sizeinbase(value, base) + 1, 0);
+    mpz_get_str(ZSTR_VAL(retstr), base, value);
+    ZSTR_LEN(retstr) = strlen(ZSTR_VAL(retstr));
+    return retstr;
+}
+
+PHP_METHOD(MyGMP, __toString) {
+    mygmp_object *objval = mygmp_from_zend_object(Z_OBJ_P(getThis()));
+    RETURN_STR(mpz_to_zend_string(objval->value, 10));
+}
+
+PHP_METHOD(MyGMP, __debugInfo) {
+    mygmp_object *objval = mygmp_from_zend_object(Z_OBJ_P(getThis()));
+    array_init(return_value);
+    add_index_str(return_value, 2, mpz_to_zend_string(objval->value, 2));
+    add_index_str(return_value, 8, mpz_to_zend_string(objval->value, 8));
+    add_index_str(return_value, 10, mpz_to_zend_string(objval->value, 10));
+    add_index_str(return_value, 16, mpz_to_zend_string(objval->value, 16));
+}
+
 static zend_object* mygmp_ctor(zend_class_entry *ce) {
     mygmp_object *objval = ecalloc(1, sizeof(mygmp_object) + zend_object_properties_size(ce));
     mpz_init(objval->value);

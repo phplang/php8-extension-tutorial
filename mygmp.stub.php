@@ -18,4 +18,6 @@ function mygmp_random_ints(int $count, int $bits = 64): array|false {}
 
 class MyGMP {
     public function __construct(int|float|string $num = 0) {}
+    public function __toString(): string {}
+    public function __debugInfo(): array {}
 }
