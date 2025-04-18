@@ -44,6 +44,22 @@ PHP_FUNCTION(mygmp_add) {
     RETURN_STR(retstr);
 }
 
+PHP_FUNCTION(mygmp_random_ints) {
+    zend_long count;
+    zend_long bits = sizeof(zend_long) << 3;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "l|l",
+                              &count, &bits) == FAILURE) {
+        return;
+    }
+
+    array_init(return_value);
+    while (count--) {
+        zend_long val = (zend_long)gmp_urandomb_ui(randstate, bits);
+        add_next_index_long(return_value, val);
+    }
+}
+
 static PHP_MINIT_FUNCTION(mygmp) {
     gmp_randinit_mt(randstate);
     return SUCCESS;
