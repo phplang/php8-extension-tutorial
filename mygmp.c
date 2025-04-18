@@ -48,6 +48,22 @@ PHP_FUNCTION(mygmp_add) {
     do_mygmp_add(return_value, arg1, arg2);
 }
 
+PHP_FUNCTION(mygmp_add_array) {
+    zend_array *arr;
+    zval *a, *b;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "h", &arr) == FAILURE) { return; }
+
+    a = zend_symtable_str_find(arr, "a", strlen("a"));
+    b = zend_symtable_str_find(arr, "b", strlen("b"));
+    if (!a || (Z_TYPE_P(a) != IS_STRING) || !b || (Z_TYPE_P(b) != IS_STRING)) {
+        php_error(E_WARNING, "Invalid or missing elements");
+        return;
+    }
+
+    do_mygmp_add(return_value, Z_STR_P(a), Z_STR_P(b));
+}
+
 PHP_FUNCTION(mygmp_random_ints) {
     zend_long count;
     zend_long bits = sizeof(zend_long) << 3;
