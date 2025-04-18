@@ -123,8 +123,15 @@ PHP_FUNCTION(mygmp_random_ints) {
     }
 }
 
+static zend_class_entry *mygmp_ce;
+
+PHP_METHOD(MyGMP, __construct) {
+    // TODO...
+}
+
 static PHP_MINIT_FUNCTION(mygmp) {
     gmp_randinit_mt(randstate);
+    mygmp_ce = register_class_MyGMP();
     return SUCCESS;
 }
 

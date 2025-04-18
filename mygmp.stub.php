@@ -1,6 +1,9 @@
 <?php
 
-/** @generate-function-entries */
+/**
+ * @generate-function-entries
+ * @generate-class-entries
+ */
 
 function mygmp_version(): void {}
 
@@ -12,3 +15,7 @@ function mygmp_add_array(array $arr): string {}
 function mygmp_sum(array $nums): string|false {}
 
 function mygmp_random_ints(int $count, int $bits = 64): array|false {}
+
+class MyGMP {
+    public function __construct(int|float|string $num = 0) {}
+}
