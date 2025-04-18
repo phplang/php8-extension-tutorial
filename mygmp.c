@@ -68,6 +68,43 @@ PHP_FUNCTION(mygmp_add_array) {
     do_mygmp_add(return_value, Z_STR_P(a), Z_STR_P(b));
 }
 
+PHP_FUNCTION(mygmp_sum) {
+    zend_array *arr;
+    zend_string *retstr;
+    mpz_t ret;
+    zval *val;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "h", &arr) == FAILURE) {
+        RETURN_THROWS();
+    }
+
+    mpz_init(ret);
+    /* foreach ($arr as $val) */
+    ZEND_HASH_FOREACH_VAL(arr, val) {
+        mpz_t v;
+        zend_string *str = zval_get_string(val); // Provides auto-coersion
+
+        mpz_init(v);
+        if (mpz_set_str(v, ZSTR_VAL(str), 0)) {
+            php_error(E_WARNING, "Invalid value: %s", ZSTR_VAL(str));
+            mpz_clear(v);
+            zend_string_release(str);
+            continue;
+        }
+
+        mpz_add(ret, ret, v); // $ret += $v;
+        mpz_clear(v);
+        zend_string_release(str);
+    } ZEND_HASH_FOREACH_END();
+
+    retstr = zend_string_alloc(mpz_sizeinbase(ret, 10), 0);
+    mpz_get_str(ZSTR_VAL(retstr), 10, ret);
+    ZSTR_LEN(retstr) = strlen(ZSTR_VAL(retstr));
+
+    mpz_clear(ret);
+    RETURN_STR(retstr);
+}
+
 PHP_FUNCTION(mygmp_random_ints) {
     zend_long count;
     zend_long bits = sizeof(zend_long) << 3;
