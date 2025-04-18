@@ -10,6 +10,10 @@
 
 static gmp_randstate_t randstate;
 
+PHP_FUNCTION(mygmp_get_version) {
+    RETURN_STRING(gmp_version);
+}
+
 PHP_FUNCTION(mygmp_version) {
     php_printf("%s\n", gmp_version);
 }
