@@ -6,7 +6,13 @@
 #include "ext/standard/info.h"
 #include <gmp.h>
 
+#include "mygmp_arginfo.h"
+
 static gmp_randstate_t randstate;
+
+PHP_FUNCTION(mygmp_version) {
+    php_printf("%s\n", gmp_version);
+}
 
 static PHP_MINIT_FUNCTION(mygmp) {
     gmp_randinit_mt(randstate);
@@ -28,7 +34,7 @@ static PHP_MINFO_FUNCTION(mygmp) {
 zend_module_entry mygmp_module_entry = { 
     STANDARD_MODULE_HEADER,
     "mygmp",
-    NULL, /* functions */
+    ext_functions,
     PHP_MINIT(mygmp),
     PHP_MSHUTDOWN(mygmp),
     NULL, /* RINIT */
