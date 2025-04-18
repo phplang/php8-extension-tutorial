@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 818822aa1ab5369157e409a2a0a657f334aeb369 */
+ * Stub hash: d7d10caca50cf525b2ad6327bd21c3f5896d6ebd */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_mygmp_version, 0, 0, IS_VOID, 0)
 ZEND_END_ARG_INFO()
@@ -29,6 +29,11 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_class_MyGMP___construct, 0, 0, 0)
 	ZEND_ARG_TYPE_MASK(0, num, MAY_BE_LONG|MAY_BE_DOUBLE|MAY_BE_STRING, "0")
 ZEND_END_ARG_INFO()
 
+#define arginfo_class_MyGMP___toString arginfo_mygmp_get_version
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_MyGMP___debugInfo, 0, 0, IS_ARRAY, 0)
+ZEND_END_ARG_INFO()
+
 ZEND_FUNCTION(mygmp_version);
 ZEND_FUNCTION(mygmp_get_version);
 ZEND_FUNCTION(mygmp_add);
@@ -36,6 +41,8 @@ ZEND_FUNCTION(mygmp_add_array);
 ZEND_FUNCTION(mygmp_sum);
 ZEND_FUNCTION(mygmp_random_ints);
 ZEND_METHOD(MyGMP, __construct);
+ZEND_METHOD(MyGMP, __toString);
+ZEND_METHOD(MyGMP, __debugInfo);
 
 static const zend_function_entry ext_functions[] = {
 	ZEND_FE(mygmp_version, arginfo_mygmp_version)
@@ -49,6 +56,8 @@ static const zend_function_entry ext_functions[] = {
 
 static const zend_function_entry class_MyGMP_methods[] = {
 	ZEND_ME(MyGMP, __construct, arginfo_class_MyGMP___construct, ZEND_ACC_PUBLIC)
+	ZEND_ME(MyGMP, __toString, arginfo_class_MyGMP___toString, ZEND_ACC_PUBLIC)
+	ZEND_ME(MyGMP, __debugInfo, arginfo_class_MyGMP___debugInfo, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
 
