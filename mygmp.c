@@ -48,9 +48,17 @@ PHP_FUNCTION(mygmp_random_ints) {
     zend_long count;
     zend_long bits = sizeof(zend_long) << 3;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "l|l",
-                              &count, &bits) == FAILURE) {
-        return;
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "l|l", &count, &bits) == FAILURE) { return; }
+
+    if (count < 0) {
+        php_error(E_WARNING, "Invalid number of random ints requested");
+        RETURN_FALSE;
+    }
+
+    if ((bits < 1) || (bits > (sizeof(zend_long) << 3))) {
+        php_error(E_WARNING, "Invalid bitsize requested, using %ld instead",
+                  sizeof(zend_long) << 3);
+        bits = sizeof(zend_long) << 3;
     }
 
     array_init(return_value);
