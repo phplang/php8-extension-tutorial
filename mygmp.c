@@ -145,6 +145,32 @@ static zend_object* mygmp_to_zend_object(mygmp_object* objval)
 static mygmp_object* mygmp_from_zend_object(zend_object* zobj)
     { return ((mygmp_object*)(zobj + 1)) - 1; }
 
+static zend_result mygmp_init_from_zval(mpz_t val, zval *in) {
+    if (!in) {
+        mpz_set_si(val, 0);
+        return SUCCESS;
+    }
+
+    switch (Z_TYPE_P(in)) {
+       case IS_LONG:
+            mpz_set_si(val, Z_LVAL_P(in));
+            return SUCCESS;
+       case IS_STRING:
+            return mpz_set_str(val, Z_STRVAL_P(in), 0) ? FAILURE : SUCCESS;
+       case IS_DOUBLE:
+            mpz_set_si(val, (zend_long)Z_DVAL_P(in));
+            return SUCCESS;
+       case IS_OBJECT:
+            if (instanceof_function(Z_OBJCE_P(in), mygmp_ce)) {
+                mpz_set(val, mygmp_from_zend_object(Z_OBJ_P(in))->value);
+                return SUCCESS;
+            }
+            return FAILURE;
+       default:
+            return FAILURE;
+   }
+}
+
 PHP_METHOD(MyGMP, __construct) {
     mygmp_object *objval = mygmp_from_zend_object(Z_OBJ_P(getThis()));
     zval *initval = NULL;
@@ -153,21 +179,38 @@ PHP_METHOD(MyGMP, __construct) {
         return;
     }
 
-    if (!initval) { return; }
-    switch (Z_TYPE_P(initval)) {
-       case IS_LONG:
-            mpz_set_si(objval->value, Z_LVAL_P(initval));
-            break;
-       case IS_STRING:
-            mpz_set_str(objval->value, Z_STRVAL_P(initval), 0);
-            break;
-       case IS_DOUBLE:
-            mpz_set_si(objval->value, (zend_long)Z_DVAL_P(initval));
-            break;
-        default:
-            php_error(E_ERROR, "Invalid type supplied");
-   }
+    if (mygmp_init_from_zval(objval->value, initval) == FAILURE) {
+        php_error(E_ERROR, "Failed initalizing MyGMP object");
+        return;
+    }
 }
+
+typedef void(*mygmp_mpz_arith_t)(mpz_t rop, const mpz_t op1, const mpz_t op2);
+void do_mygmp_arith(mygmp_mpz_arith_t opfunc, INTERNAL_FUNCTION_PARAMETERS) {
+    zval *zother;
+    mpz_t other;
+    mygmp_object *objval = mygmp_from_zend_object(Z_OBJ_P(getThis()));
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "z", &zother) == FAILURE) {
+        RETURN_THROWS();
+    }
+
+    mpz_init(other);
+    if (mygmp_init_from_zval(other, zother) == FAILURE) {
+        php_error(E_ERROR, "Invalid operand");
+        mpz_clear(other);
+        return;
+    }
+
+    object_init_ex(return_value, mygmp_ce);
+    opfunc(mygmp_from_zend_object(Z_OBJ_P(return_value))->value, objval->value, other);
+    mpz_clear(other);
+}
+
+PHP_METHOD(MyGMP, add) { do_mygmp_arith(mpz_add, INTERNAL_FUNCTION_PARAM_PASSTHRU); }
+PHP_METHOD(MyGMP, sub) { do_mygmp_arith(mpz_sub, INTERNAL_FUNCTION_PARAM_PASSTHRU); }
+PHP_METHOD(MyGMP, mul) { do_mygmp_arith(mpz_mul, INTERNAL_FUNCTION_PARAM_PASSTHRU); }
+PHP_METHOD(MyGMP, divq) { do_mygmp_arith(mpz_cdiv_q, INTERNAL_FUNCTION_PARAM_PASSTHRU); }
 
 static zend_string* mpz_to_zend_string(mpz_t value, int base) {
     zend_string *retstr = zend_string_alloc(mpz_sizeinbase(value, base) + 1, 0);

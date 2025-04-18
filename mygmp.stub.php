@@ -20,4 +20,9 @@ class MyGMP {
     public function __construct(int|float|string $num = 0) {}
     public function __toString(): string {}
     public function __debugInfo(): array {}
+
+    public function add(\MyGMP|int|float|string $other): \MyGMP {}
+    public function sub(\MyGMP|int|float|string $other): \MyGMP {}
+    public function mul(\MyGMP|int|float|string $other): \MyGMP {}
+    public function divq(\MyGMP|int|float|string $other): \MyGMP {}
 }
