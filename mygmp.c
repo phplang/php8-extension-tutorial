@@ -146,7 +146,27 @@ static mygmp_object* mygmp_from_zend_object(zend_object* zobj)
     { return ((mygmp_object*)(zobj + 1)) - 1; }
 
 PHP_METHOD(MyGMP, __construct) {
-    // TODO...
+    mygmp_object *objval = mygmp_from_zend_object(Z_OBJ_P(getThis()));
+    zval *initval = NULL;
+
+    if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "|z!", &initval) == FAILURE) {
+        return;
+    }
+
+    if (!initval) { return; }
+    switch (Z_TYPE_P(initval)) {
+       case IS_LONG:
+            mpz_set_si(objval->value, Z_LVAL_P(initval));
+            break;
+       case IS_STRING:
+            mpz_set_str(objval->value, Z_STRVAL_P(initval), 0);
+            break;
+       case IS_DOUBLE:
+            mpz_set_si(objval->value, (zend_long)Z_DVAL_P(initval));
+            break;
+        default:
+            php_error(E_ERROR, "Invalid type supplied");
+   }
 }
 
 static zend_object* mygmp_ctor(zend_class_entry *ce) {
