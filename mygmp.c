@@ -44,7 +44,7 @@ static void do_mygmp_add(zval *return_value, zend_string *arg1, zend_string *arg
 
 PHP_FUNCTION(mygmp_add) {
     zend_string *arg1, *arg2;
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "PP", &arg1, &arg2) == FAILURE) { return; }
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "PP", &arg1, &arg2) == FAILURE) { RETURN_THROWS(); }
     do_mygmp_add(return_value, arg1, arg2);
 }
 
@@ -52,7 +52,7 @@ PHP_FUNCTION(mygmp_add_array) {
     zend_array *arr;
     zval *a, *b;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "h", &arr) == FAILURE) { return; }
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "h", &arr) == FAILURE) { RETURN_THROWS(); }
 
     a = zend_symtable_str_find(arr, "a", strlen("a"));
     b = zend_symtable_str_find(arr, "b", strlen("b"));
@@ -70,7 +70,7 @@ PHP_FUNCTION(mygmp_sum) {
     mpz_t ret;
     zval *val;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "h", &arr) == FAILURE) { return; }
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "h", &arr) == FAILURE) { RETURN_THROWS(); }
 
     mpz_init(ret);
     /* foreach ($arr as $val) */
@@ -103,7 +103,7 @@ PHP_FUNCTION(mygmp_random_ints) {
     zend_long count;
     zend_long bits = sizeof(zend_long) << 3;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "l|l", &count, &bits) == FAILURE) { return; }
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "l|l", &count, &bits) == FAILURE) { RETURN_THROWS(); }
 
     if (count < 0) {
         php_error(E_WARNING, "Invalid number of random ints requested");
@@ -168,7 +168,7 @@ PHP_METHOD(MyGMP, __construct) {
     zval *initval = NULL;
 
     if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "|z!", &initval) == FAILURE) {
-        return;
+        RETURN_THROWS();
     }
 
     if (mygmp_init_from_zval(objval->value, initval) == FAILURE) {
@@ -183,7 +183,7 @@ void do_mygmp_arith(mygmp_mpz_arith_t opfunc, INTERNAL_FUNCTION_PARAMETERS) {
     mpz_t other;
     mygmp_object *objval = mygmp_from_zend_object(Z_OBJ_P(getThis()));
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "z", &zother) == FAILURE) { return; }
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "z", &zother) == FAILURE) { RETURN_THROWS(); }
     mpz_init(other);
     if (mygmp_init_from_zval(other, zother) == FAILURE) {
         php_error(E_ERROR, "Invalid operand");
