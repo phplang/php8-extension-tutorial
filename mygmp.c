@@ -58,7 +58,7 @@ PHP_FUNCTION(mygmp_add_array) {
     b = zend_symtable_str_find(arr, "b", strlen("b"));
     if (!a || (Z_TYPE_P(a) != IS_STRING) || !b || (Z_TYPE_P(b) != IS_STRING)) {
         php_error(E_WARNING, "Invalid or missing elements");
-        return;
+        RETURN_NULL();
     }
 
     do_mygmp_add(return_value, Z_STR_P(a), Z_STR_P(b));
