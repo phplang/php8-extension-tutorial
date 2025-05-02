@@ -33,7 +33,7 @@ static void do_mygmp_add(zval *return_value, zend_string *arg1, zend_string *arg
     mpz_add(ret, num1, num2);
 
     /* Marshal the sum to a string for output */
-    retstr = zend_string_alloc(mpz_sizeinbase(ret, 10), 0);
+    retstr = zend_string_alloc(mpz_sizeinbase(ret, 10), false);
     mpz_get_str(ZSTR_VAL(retstr), 10, ret);
     ZSTR_LEN(retstr) = strlen(ZSTR_VAL(retstr));
 
@@ -95,7 +95,7 @@ PHP_FUNCTION(mygmp_sum) {
         zend_string_release(str);
     } ZEND_HASH_FOREACH_END();
 
-    retstr = zend_string_alloc(mpz_sizeinbase(ret, 10), 0);
+    retstr = zend_string_alloc(mpz_sizeinbase(ret, 10), false);
     mpz_get_str(ZSTR_VAL(retstr), 10, ret);
     ZSTR_LEN(retstr) = strlen(ZSTR_VAL(retstr));
 
@@ -211,7 +211,7 @@ PHP_METHOD(MyGMP, mul) { do_mygmp_arith(mpz_mul, INTERNAL_FUNCTION_PARAM_PASSTHR
 PHP_METHOD(MyGMP, divq) { do_mygmp_arith(mpz_cdiv_q, INTERNAL_FUNCTION_PARAM_PASSTHRU); }
 
 static zend_string* mpz_to_zend_string(mpz_t value, int base) {
-    zend_string *retstr = zend_string_alloc(mpz_sizeinbase(value, base) + 1, 0);
+    zend_string *retstr = zend_string_alloc(mpz_sizeinbase(value, base) + 1, false);
     mpz_get_str(ZSTR_VAL(retstr), base, value);
     ZSTR_LEN(retstr) = strlen(ZSTR_VAL(retstr));
     return retstr;
