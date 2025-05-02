@@ -76,7 +76,11 @@ PHP_FUNCTION(mygmp_sum) {
     /* foreach ($arr as $val) */
     ZEND_HASH_FOREACH_VAL(arr, val) {
         mpz_t v;
-        zend_string *str = zval_get_string(val); // Provides auto-coersion
+        zend_string *str = zval_try_get_string(val); // Provides auto-coersion
+        if (UNEXPECTED(str == NULL)) {
+            mpz_clear(ret);
+            RETURN_THROWS();
+        }
 
         mpz_init(v);
         if (mpz_set_str(v, ZSTR_VAL(str), 0)) {
