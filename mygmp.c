@@ -26,7 +26,7 @@ static void do_mygmp_add(zval *return_value, zend_string *arg1, zend_string *arg
     mpz_inits(ret, num1, num2, NULL);
     if (mpz_set_str(num1, ZSTR_VAL(arg1), 0) || mpz_set_str(num2, ZSTR_VAL(arg2), 0)) {
         mpz_clears(ret, num1, num2, NULL);
-        RETURN_FALSE;
+        RETURN_NULL();
     }
 
     /* Perform the operation */
@@ -111,7 +111,7 @@ PHP_FUNCTION(mygmp_random_ints) {
 
     if (count < 0) {
         php_error(E_WARNING, "Invalid number of random ints requested");
-        RETURN_FALSE;
+        RETURN_NULL();
     }
 
     if ((bits < 1) || (bits > (sizeof(zend_long) << 3))) {
