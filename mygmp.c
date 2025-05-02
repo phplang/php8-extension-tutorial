@@ -152,13 +152,13 @@ static zend_result mygmp_init_from_zval(mpz_t val, zval *in) {
        case IS_DOUBLE:
             mpz_set_si(val, (zend_long)Z_DVAL_P(in));
             return SUCCESS;
-        case IS_OBJECT:
+       case IS_OBJECT:
             if (instanceof_function(Z_OBJCE_P(in), mygmp_ce)) {
                 mpz_set(val, mygmp_from_zend_object(Z_OBJ_P(in))->value);
                 return SUCCESS;
             }
             return FAILURE;
-        default:
+       default:
             return FAILURE;
    }
 }
