@@ -147,8 +147,14 @@ static zend_result mygmp_init_from_zval(mpz_t val, zval *in) {
        case IS_LONG:
             mpz_set_si(val, Z_LVAL_P(in));
             return SUCCESS;
-       case IS_STRING:
-            return mpz_set_str(val, Z_STRVAL_P(in), 0) ? FAILURE : SUCCESS;
+       case IS_STRING: {
+            int status = mpz_set_str(val, Z_STRVAL_P(in), 0);
+            if (status == -1) {
+                zend_argument_value_error(num, "must be a numeric string");
+                return FAILURE;
+            }
+            return SUCCESS;
+       }
        case IS_DOUBLE:
             mpz_set_si(val, (zend_long)Z_DVAL_P(in));
             return SUCCESS;
@@ -157,8 +163,9 @@ static zend_result mygmp_init_from_zval(mpz_t val, zval *in) {
                 mpz_set(val, mygmp_from_zend_object(Z_OBJ_P(in))->value);
                 return SUCCESS;
             }
-            return FAILURE;
+            /* Fallthrough */
        default:
+            zend_argument_type_error(1, "must be of type MyGM|string|int|float, %s given", zend_zval_value_name(in));
             return FAILURE;
    }
 }
@@ -172,8 +179,7 @@ PHP_METHOD(MyGMP, __construct) {
     }
 
     if (mygmp_init_from_zval(objval->value, initval) == FAILURE) {
-        php_error(E_ERROR, "Failed initalizing MyGMP object");
-        return;
+        RETURN_THROWS();
     }
 }
 
@@ -186,9 +192,8 @@ void do_mygmp_arith(mygmp_mpz_arith_t opfunc, INTERNAL_FUNCTION_PARAMETERS) {
     if (zend_parse_parameters(ZEND_NUM_ARGS(), "z", &zother) == FAILURE) { RETURN_THROWS(); }
     mpz_init(other);
     if (mygmp_init_from_zval(other, zother) == FAILURE) {
-        php_error(E_ERROR, "Invalid operand");
         mpz_clear(other);
-        return;
+        RETURN_THROWS();
     }
 
     object_init_ex(return_value, mygmp_ce);
