@@ -18,13 +18,9 @@ PHP_FUNCTION(mygmp_version) {
     php_printf("%s\n", gmp_version);
 }
 
-PHP_FUNCTION(mygmp_add) {
-    zend_string *retstr, *arg1, *arg2;
+static void do_mygmp_add(zval *return_value, zend_string *arg1, zend_string *arg2) {
+    zend_string *retstr;
     mpz_t ret, num1, num2;
-
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "PP", &arg1, &arg2) == FAILURE) {
-        RETURN_THROWS();
-    }
 
     /* Parse text strings into GMP ints */
     mpz_inits(ret, num1, num2, NULL);
@@ -44,6 +40,14 @@ PHP_FUNCTION(mygmp_add) {
     /* Free memory and return */
     mpz_clears(ret, num1, num2, NULL);
     RETURN_STR(retstr);
+}
+
+PHP_FUNCTION(mygmp_add) {
+    zend_string *arg1, *arg2;
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "PP", &arg1, &arg2) == FAILURE) {
+        RETURN_THROWS();
+    }
+    do_mygmp_add(return_value, arg1, arg2);
 }
 
 PHP_FUNCTION(mygmp_random_ints) {
